@@ -54,8 +54,9 @@
     </style>
 </head>
 <body>
-  <h1>myNote</h1>
+  <h1><a href="mynote.html">myNote</a></h1>
   <a href="mynote-form.html" id="addLink" class="add-link">+ New Note</a>
+  left-click to see details, right-click to delete
     <table id="dataTable">
         <thead>
             <tr>
@@ -83,8 +84,16 @@
                         <td>${new Date(item.last_updated).toLocaleString()}</td>
                         <td>${new Date(item.created_at).toLocaleString()}</td>
                     `;
-                    row.addEventListener('click', () => {
-                        window.location.href = `mynote-details.html?id=${item.id}`;
+                    row.addEventListener('click', (event) => {
+                        if (event.button !== 2) { // Ignore right-clicks
+                            window.location.href = `mynote-details.html?id=${item.id}`;
+                        }
+                    });
+                    row.addEventListener('contextmenu', (event) => {
+                        event.preventDefault();
+                        if (confirm('Are you sure you want to delete this row?')) {
+                            deleteRow(item.id);
+                        }
                     });
                 });
             })
@@ -116,6 +125,7 @@
                 rows.forEach(row => tbody.appendChild(row));
                 updateSortIcons(columnIndex, isAscending);
             }
+
             function updateSortIcons(columnIndex, isAscending) {
                 const icons = document.querySelectorAll('.sort-icon');
                 icons.forEach(icon => {
@@ -125,6 +135,21 @@
                 const icon = document.getElementById(`sort-icon-${columnIndex}`);
                 icon.innerHTML = isAscending ? '▲' : '▼';
             }
+            function deleteRow(id) {
+              fetch('http://localhost:8000/delete-note?' + id, {
+                  method: 'DELETE'
+              })
+              .then(response => {
+                  if (response.ok) {
+                      document.querySelector(`tr td:first-child:contains('${id}')`).closest('tr').remove();
+                  } else {
+                      console.error('Error deleting row:', response.statusText);
+                  }
+              })
+              .catch(error => {
+                  console.error('Error deleting row:', error);
+              });
+          }
     </script>
 </body>
 </html>

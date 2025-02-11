@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Details</title>
+    <title>myNote-details</title>
     <style>
         body {
           font-family: Courier New, Monospace;
@@ -20,9 +20,8 @@
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const apiUrl = 'http://localhost:8000/get-note'; // Replace with your API endpoint
 
-            // Function to get the ID from the URL
+            // Get ID param from  url
             function getIdFromUrl() {
                 const params = new URLSearchParams(window.location.search);
                 return params.get('id');
@@ -30,8 +29,8 @@
 
             const id = getIdFromUrl();
 
-            // Fetch details from the API
-            fetch(`${apiUrl}?${id}`)
+            // Fetch details from the API get-note
+            fetch('http://localhost:8000/get-note?' + id)
                 .then(response => response.json())
                 .then(data => {
                     const details = data.data[0];
@@ -39,8 +38,8 @@
                     document.getElementById('notes').value = details.notes;
                 });
 
-            // Handle form submission
-            document.getElementById('detailsForm').addEventListener('submit', function(event) {
+            // Handle form submission for API upsert-note
+            document.getElementById('noteForm').addEventListener('submit', function(event) {
                 event.preventDefault();
                 const updatedDetails = {
                     id: id,
@@ -58,7 +57,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Success:', data);
-                    window.location.href = 'mynote.html'; // Redirect to success.html
+                    window.location.href = 'mynote.html'; // Redirect to mynote
                 })
                 .catch(error => {
                     console.error('Error updating details:', error);
@@ -68,8 +67,8 @@
     </script>
 </head>
 <body>
-    <h1>myNote - update</h1>
-    <form id="detailsForm">
+    <h1><a href="mynote.html">myNote</a> - update</h1>
+    <form id="noteForm">
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" required><br><br>
         <label for="notes">Notes:</label>
